@@ -1,24 +1,14 @@
 package com.gun.course
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
-    private lateinit var btnMoveActivity: Button
-    private lateinit var btnDial: Button
-    private lateinit var btnMoveData: Button
-
-    companion object {
-        private const val EXTRA_NAME = "extra_name"
-        const val EXTRA_AGE = "extra_age"
-    }
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,33 +19,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             v.setPadding(15, systemBars.top, 15, systemBars.bottom)
             insets
         }
-        btnMoveActivity = findViewById(R.id.btn_move_activity)
-        btnDial = findViewById(R.id.btn_dial)
-        btnMoveData = findViewById(R.id.btn_move_data)
-        btnMoveActivity.setOnClickListener(this)
-        btnDial.setOnClickListener(this)
-        btnMoveData.setOnClickListener(this)
-    }
-
-    override fun onClick(view: View?) {
-        when (view?.id) {
-            R.id.btn_move_activity -> {
-                val intent = Intent(this@MainActivity, MoveActivity::class.java)
-                startActivity(intent)
-            }
-
-            R.id.btn_dial -> {
-                val phone = "08123456789"
-                val moveIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
-                startActivity(moveIntent)
-            }
-
-            R.id.btn_move_data -> {
-                val moveIntentData = Intent(this@MainActivity, MoveDataActivity::class.java)
-                moveIntentData.putExtra(MoveDataActivity.EXTRA_NAME, "Samuel")
-                moveIntentData.putExtra(MoveDataActivity.EXTRA_AGE, 19)
-                startActivity(moveIntentData)
-            }
-        }
+        // Data untuk ditampilkan
+        val items = listOf(
+            "Item 1",
+            "Item 2",
+            "Item 3",
+            "Item 4",
+            "Item 5",
+            "Item 6",
+            "Item 7",
+            "Item 8",
+            "Item 9",
+            "Item 10",
+            "item 11",
+            "item 12",
+            "item 13", "item 14", "item 15", "item 16", "item 17", "item 18", "item 19", "item 20"
+        )
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = ItemAdapter(items)
     }
 }

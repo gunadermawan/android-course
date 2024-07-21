@@ -8,25 +8,9 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btn_move_activity"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Move activity" />
-
-    <Button
-        android:id="@+id/btn_dial"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Dial phone" />
-
-    <Button
-        android:id="@+id/btn_move_data"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Move with data" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>
