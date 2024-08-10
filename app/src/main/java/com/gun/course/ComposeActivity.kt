@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -22,9 +24,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gun.course.model.Post
 import com.gun.course.network.RetrofitInstance
+import com.gun.course.repository.PostRepo
 import com.gun.course.ui.theme.CourseAppTheme
+import com.gun.course.viewmodel.PostViewModel
+import com.gun.course.viewmodel.PostViewModelFactory
 import kotlinx.coroutines.launch
 
 class ComposeActivity : ComponentActivity() {
@@ -34,7 +40,7 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NetworkRequest(modifier = Modifier.padding(innerPadding))
+                    PostScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -74,10 +80,36 @@ fun NetworkRequest(modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun PostScreen(
+    modifier: Modifier = Modifier,
+    postViewModel: PostViewModel = viewModel(
+        factory = PostViewModelFactory(
+            PostRepo(RetrofitInstance.api)
+        )
+    )
+) {
+    val posts by postViewModel.posts.observeAsState(emptyList())
+    LazyColumn {
+        items(posts.size) { index ->
+            val post = posts[index]
+            PostItem(post = post)
+        }
+    }
+}
+
+@Composable
+fun PostItem(post: Post) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = post.title, style = MaterialTheme.typography.titleMedium)
+        Text(text = post.body, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     CourseAppTheme {
-        NetworkRequest()
+        PostScreen()
     }
 }
