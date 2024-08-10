@@ -9,6 +9,9 @@ class ArticleViewModel : ViewModel() {
     private val _articles = MutableLiveData<List<Article>>()
     val articles: LiveData<List<Article>> get() = _articles
 
+    private val _data = MutableLiveData<String>()
+    val data: LiveData<String> get() = _data
+
     fun fetchArticles() {
         _articles.value = listOf(
             Article("Title 1", "Content 1"),
@@ -22,5 +25,9 @@ class ArticleViewModel : ViewModel() {
             Article("Title 9", "Content 9"),
             Article("Title 10", "Content 10"),
         )
+    }
+
+    fun updateData(newData: String) {
+        _data.value = newData
     }
 }

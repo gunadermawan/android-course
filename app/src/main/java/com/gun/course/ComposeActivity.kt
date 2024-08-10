@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,9 +31,24 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ArticleScreen(modifier = Modifier.padding(innerPadding))
+                    LiveDataExample(modifier = Modifier.padding(innerPadding))
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun LiveDataExample(modifier: Modifier = Modifier, viewModel: ArticleViewModel = viewModel()) {
+    val data by viewModel.data.observeAsState("nilai awal")
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = data, style = MaterialTheme.typography.headlineSmall)
+        Button(onClick = { viewModel.updateData("Hello, LiveData!") }) {
+            Text(text = "Update Data")
         }
     }
 }
@@ -64,6 +80,6 @@ fun ArticleScreen(modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     CourseAppTheme {
-        ArticleScreen()
+        LiveDataExample()
     }
 }
