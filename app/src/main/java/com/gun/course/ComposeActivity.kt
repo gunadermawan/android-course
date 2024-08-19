@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -45,6 +46,7 @@ import com.gun.course.model.Post
 import com.gun.course.network.RetrofitInstance
 import com.gun.course.repository.PostRepo
 import com.gun.course.ui.theme.CourseAppTheme
+import com.gun.course.utils.setDailyAlarm
 import com.gun.course.viewmodel.PostViewModel
 import com.gun.course.viewmodel.PostViewModelFactory
 import kotlinx.coroutines.launch
@@ -57,7 +59,7 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NetworkRequest(modifier = Modifier.padding(innerPadding))
+                    AlarmManageScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -210,10 +212,30 @@ fun PostItem(post: Post) {
     }
 }
 
+@Composable
+fun AlarmManageScreen(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Set Daily Alarm", style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = modifier.height(16.dp))
+        Button(onClick = {
+            setDailyAlarm(context)
+        }) {
+            Text(text = "Set Alarm")
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     CourseAppTheme {
-        PostScreen()
+        AlarmManageScreen()
     }
 }
