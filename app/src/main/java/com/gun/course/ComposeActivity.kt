@@ -42,10 +42,13 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.gun.course.model.Post
 import com.gun.course.network.RetrofitInstance
 import com.gun.course.repository.PostRepo
 import com.gun.course.ui.theme.CourseAppTheme
+import com.gun.course.utils.NotificationWorker
 import com.gun.course.utils.setDailyAlarm
 import com.gun.course.viewmodel.PostViewModel
 import com.gun.course.viewmodel.PostViewModelFactory
@@ -59,7 +62,7 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AlarmManageScreen(modifier = Modifier.padding(innerPadding))
+                    WorkManagerScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -81,21 +84,8 @@ class ComposeActivity : ComponentActivity() {
 }
 
 @Composable
-fun NotificationScreen(modifier: Modifier = Modifier) {
+fun WorkManagerScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    var hasNotificationPermission by remember {
-        mutableStateOf(chekcNotificationPermission(context))
-    }
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted ->
-            hasNotificationPermission = isGranted
-            if (isGranted) {
-                showNotification(context)
-            }
-        }
-    )
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -103,112 +93,14 @@ fun NotificationScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (!hasNotificationPermission) {
-                    launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                } else {
-                    showNotification(context)
-                }
-            } else {
-                showNotification(context)
-            }
-        }) {
-            Text(text = "Show Notification")
-        }
+        Text(text = "Work Manager Example", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = modifier.height(16.dp))
-        Text(text = if (hasNotificationPermission) "Notification Permission Granted" else "Notification Permission Not Granted")
-    }
-}
-
-fun chekcNotificationPermission(context: Context): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.POST_NOTIFICATIONS
-        ) == PackageManager.PERMISSION_GRANTED
-    } else {
-        true
-    }
-}
-
-fun showNotification(context: Context) {
-    val notificationId = 1
-    val builder = NotificationCompat.Builder(context, "CHANNEL_ID")
-        .setSmallIcon(R.drawable.ic_launcher_foreground)
-        .setContentTitle("New Notification")
-        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-    with(NotificationManagerCompat.from(context)) {
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
-        notify(notificationId, builder.build())
-    }
-}
-
-
-@Composable
-fun NetworkRequest(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    var posts by remember {
-        mutableStateOf<List<Post>>(emptyList())
-    }
-    val scope = rememberCoroutineScope()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(posts) { post ->
-                Text(text = post.title, modifier = Modifier.padding(bottom = 16.dp))
-            }
-        }
         Button(onClick = {
-            scope.launch {
-                try {
-                    val post = RetrofitInstance.api.getPost()
-                    posts = post.take(10)
-                    showNotification(context)
-                    Log.d("TAG DEBOS", "NetworkRequest: enter try")
-                } catch (e: Exception) {
-                    Log.e("TAG ERROR", "NetworkRequest: ${e.message}")
-                }
-            }
+            val workStart = OneTimeWorkRequestBuilder<NotificationWorker>().build()
+            WorkManager.getInstance(context).enqueue(workStart)
         }) {
-            Text(text = "get data")
+            Text(text = "Start Worker")
         }
-    }
-}
-
-@Composable
-fun PostScreen(
-    modifier: Modifier = Modifier,
-    postViewModel: PostViewModel = viewModel(
-        factory = PostViewModelFactory(
-            PostRepo(RetrofitInstance.api)
-        )
-    )
-) {
-    val posts by postViewModel.posts.observeAsState(emptyList())
-    LazyColumn {
-        items(posts.size) { index ->
-            val post = posts[index]
-            PostItem(post = post)
-        }
-    }
-}
-
-@Composable
-fun PostItem(post: Post) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = post.title, style = MaterialTheme.typography.titleMedium)
-        Text(text = post.body, style = MaterialTheme.typography.bodyMedium)
     }
 }
 
@@ -236,6 +128,6 @@ fun AlarmManageScreen(modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     CourseAppTheme {
-        AlarmManageScreen()
+        WorkManagerScreen()
     }
 }

@@ -20,7 +20,7 @@ class AlarmReceiver : BroadcastReceiver() {
         }
     }
 
-    fun showNotification(context: Context) {
+    private fun showNotification(context: Context) {
         val notificationId = 1
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
