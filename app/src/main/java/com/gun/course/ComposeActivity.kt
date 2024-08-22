@@ -20,8 +20,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gun.course.custom.MyCustomLayout
 import com.gun.course.ui.theme.CourseAppTheme
 
 class ComposeActivity : ComponentActivity() {
@@ -32,7 +34,7 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    GreetingScreen(modifier = Modifier.padding(innerPadding))
+                    CustomLayoutScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -43,8 +45,18 @@ class ComposeActivity : ComponentActivity() {
     @Composable
     fun GreetingPreview() {
         CourseAppTheme {
-            GreetingScreen(modifier = Modifier)
+            CustomLayoutScreen(modifier = Modifier)
         }
+    }
+}
+
+@Composable
+fun CustomLayoutScreen(modifier: Modifier = Modifier) {
+    MyCustomLayout(modifier = modifier
+        .padding(16.dp)) {
+        Text(text = "item 1")
+        Text(text = "item 2")
+        Text(text = "item 3")
     }
 }
 
