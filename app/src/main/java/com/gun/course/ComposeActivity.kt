@@ -1,6 +1,9 @@
 package com.gun.course
 
 import android.os.Bundle
+import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,8 +16,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,17 +32,18 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.gun.course.ui.theme.CourseAppTheme
 
 class ComposeActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CustomGraphics(modifier = Modifier.padding(innerPadding))
+                    WebViewSample(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -69,6 +79,35 @@ fun GradientBrushSample(modifier: Modifier = Modifier) {
             .size(100.dp)
             .background(Brush.linearGradient(colors = listOf(Color.Red, Color.Blue)))
     )
+}
+
+@Composable
+fun WebViewComponent(url: String) {
+    AndroidView(factory = { context ->
+        WebView(context).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            webViewClient = WebViewClient()
+            loadUrl(url)
+        }
+    }, update = { webview ->
+        webview.loadUrl(url)
+    })
+}
+
+@Composable
+fun WebViewSample(modifier: Modifier = Modifier) {
+    var url by remember { mutableStateOf("https://www.google.com") }
+
+    Column {
+        Button(onClick = { url = "https://www.google.com" }) {
+            Text(text = "load another website")
+        }
+        // WebView Component
+        WebViewComponent(url = url)
+    }
 }
 
 
