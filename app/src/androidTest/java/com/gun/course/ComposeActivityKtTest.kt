@@ -15,14 +15,4 @@ class ComposeActivityKtTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    @Test
-    fun greetingScreen() {
-        composeTestRule.setContent {
-            GreetingScreen(modifier = Modifier)
-        }
-
-        composeTestRule.onNodeWithText("Enter your name").performTextInput("Andorid Developer")
-        composeTestRule.onNodeWithText("Greet").performClick()
-        composeTestRule.onNodeWithText("Hello, Andorid Developer").assertExists()
-    }
 }

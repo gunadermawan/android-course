@@ -4,41 +4,25 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.gun.course.custom.MyCustomLayout
 import com.gun.course.ui.theme.CourseAppTheme
 
 class ComposeActivity : ComponentActivity() {
@@ -49,125 +33,59 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AdvancedImageScreen(modifier = Modifier.padding(innerPadding))
+                    CustomGraphics(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
     }
-
-
-    @Preview(showBackground = true)
-    @Composable
-    fun GreetingPreview() {
-        CourseAppTheme {
-            AdvancedImageScreen(modifier = Modifier)
-        }
-    }
 }
 
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AdvancedImageScreen(modifier: Modifier = Modifier) {
-    val pagerState = rememberPagerState(pageCount = { 3 })
-    HorizontalPager(
-        state = pagerState,
-        modifier = modifier.fillMaxSize(),
-        verticalAlignment = Alignment.CenterVertically
-    ) { page ->
-        when (page) {
-            0 -> {
-                val bitmap = ImageBitmap.imageResource(id = R.drawable.img_1)
-                Image(
-                    bitmap = bitmap,
-                    contentDescription = "image bitmap",
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .border(
-                            BorderStroke(4.dp, Color.Gray),
-                            RoundedCornerShape(16.dp)
-                        )
-                        .clip(RoundedCornerShape(16.dp)),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
-            1 -> {
-                val vector = ImageVector.vectorResource(id = R.drawable.baseline_back_hand_24)
-                Image(
-                    imageVector = vector, contentDescription = "image vector", modifier = modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .border(
-                            BorderStroke(4.dp, Color.Gray),
-                            RoundedCornerShape(16.dp)
-                        )
-                        .clip(RoundedCornerShape(16.dp)),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
-            2 -> {
-                AsyncImage(
-                    model = "https://picsum.photos/id/133/2742/1828",
-                    contentDescription = "image from internet",
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .border(
-                            BorderStroke(4.dp, Color.Gray),
-                            RoundedCornerShape(16.dp)
-                        )
-                        .clip(RoundedCornerShape(16.dp)),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
+fun CustomGraphics(modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier.size(200.dp)) {
+        drawCircle(
+            color = Color.Red,
+            radius = size.minDimension / 2,
+            center = Offset(size.width / 2, size.height / 2)
+        )
     }
 }
 
 @Composable
-fun CustomLayoutScreen(modifier: Modifier = Modifier) {
-    MyCustomLayout(
+fun CustomShape(modifier: Modifier = Modifier) {
+    Box(
         modifier = modifier
-            .padding(16.dp)
-    ) {
-        Text(text = "item 1")
-        Text(text = "item 2")
-        Text(text = "item 3")
-    }
+            .size(100.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(color = Color.Red)
+    )
 }
 
+
 @Composable
-fun GreetingScreen(modifier: Modifier) {
-
-    var name by remember {
-        mutableStateOf("")
-    }
-
-    var greeting by remember {
-        mutableStateOf("")
-    }
-
-    Column(
+fun GradientBrushSample(modifier: Modifier = Modifier) {
+    Box(
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text(text = "Enter your name") })
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { greeting = "Hello, $name" }) {
-            Text(text = "Greet")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        if (greeting.isNotEmpty()) {
-            Text(text = greeting)
+            .size(100.dp)
+            .background(Brush.linearGradient(colors = listOf(Color.Red, Color.Blue)))
+    )
+}
+
+
+@Preview
+@Composable
+private fun GraphicsPreview() {
+    CourseAppTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CustomGraphics()
+            CustomShape()
+            GradientBrushSample()
         }
     }
 }
