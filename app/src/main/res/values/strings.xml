@@ -1,4 +1,9 @@
 <resources>
-    <string name="app_name">course App</string>
+    <string name="app_name" translatable="false">course App</string>
     <string name="title_activity_compose">ComposeActivity</string>
+    <string name="description_id">this is description in Indonesia</string>
+    <string name="description_en">this is a description in English</string>
+    <string name="switch_en">Translate to English</string>
+    <string name="switch_id">Translate to Indonesia</string>
+    <string name="desc_img">this is image 1</string>
 </resources>

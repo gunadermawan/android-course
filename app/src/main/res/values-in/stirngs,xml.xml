@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="description_en">ini adalah deskripsi gambar bahasa indonesia</string>
+    <string name="title_activity_compose">ComposeActivity</string>
+    <string name="description_id">ini adalah deskripsi gambar bahasa indonesia</string>
+    <string name="switch_en">Terjemahkan ke inggris</string>
+    <string name="switch_id">Terjemahkan ke Indonesia</string>
+    <string name="desc_img">ini adalah gambar img 1</string>
+</resources>

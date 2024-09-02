@@ -10,22 +10,28 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gun.course.ui.theme.CourseAppTheme
@@ -38,9 +44,46 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SampleSharedElement(modifier = Modifier.padding(innerPadding))
+                    TranslateScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
+        }
+    }
+}
+
+
+@Composable
+fun TranslateScreen(modifier: Modifier = Modifier) {
+    var isEnglish by remember { mutableStateOf(true) }
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.img_1), contentDescription = stringResource(
+                R.string.desc_img
+            )
+        )
+        Text(
+            text = if (isEnglish) stringResource(id = R.string.description_en) else stringResource(
+                id = R.string.description_id
+            )
+        )
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = if (isEnglish) stringResource(id = R.string.switch_en) else stringResource(
+                    id = R.string.switch_id
+                )
+            )
+            Spacer(modifier = modifier.width(8.dp))
+            Switch(checked = isEnglish, onCheckedChange = { isEnglish = it })
         }
     }
 }
