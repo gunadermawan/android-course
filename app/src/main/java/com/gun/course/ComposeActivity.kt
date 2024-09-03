@@ -1,5 +1,6 @@
 package com.gun.course
 
+import android.Manifest
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,11 +19,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -42,6 +45,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.gun.course.ui.theme.CourseAppTheme
 
 class ComposeActivity : ComponentActivity() {
@@ -52,13 +58,30 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SidebarContentLayout(
-                        modifier = Modifier.padding(innerPadding),
-                        items = listOf("Item 1", "Item 2", "Item 3"),
-                        onItemSelected = {
-                            println("Selected item: $it")
-                        }
+                    RequestPermissionScreen(
+                        modifier = Modifier.padding(innerPadding)
                     )
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalPermissionsApi::class)
+    @Composable
+    fun RequestPermissionScreen(modifier: Modifier = Modifier) {
+        val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+        Column(
+            modifier = modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (cameraPermissionState.status.isGranted) {
+                Text(text = "Permission Granted!, you can access the camera")
+            } else {
+                Text(text = "Permission is required to proceed")
+                Spacer(modifier = modifier.height(16.dp))
+                Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
+                    Text(text = "Request Permission")
                 }
             }
         }

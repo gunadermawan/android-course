@@ -86,4 +86,5 @@ dependencies {
     implementation (libs.androidx.glance.appwidget)
     // For interop APIs with Material 3
     implementation (libs.androidx.glance.material3)
+    implementation (libs.accompanist.permissions)
 }
