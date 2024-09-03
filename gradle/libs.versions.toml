@@ -24,6 +24,7 @@ workRuntimeKtx = "2.9.1"
 animationGraphicsAndroid = "1.6.8"
 ui = "1.7.0-rc01"
 animation = "1.7.0-rc01"
+material3WindowSizeClass = "1.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -57,6 +58,7 @@ androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx"
 androidx-animation-graphics-android = { group = "androidx.compose.animation", name = "animation-graphics-android", version.ref = "animationGraphicsAndroid" }
 ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 androidx-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "animation" }
+androidx-material3-window-size = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "material3WindowSizeClass" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.animation.graphics.android)
     implementation(libs.ui)
     implementation(libs.androidx.animation)
+    implementation(libs.androidx.material3.window.size)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
