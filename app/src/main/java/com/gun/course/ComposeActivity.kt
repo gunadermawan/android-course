@@ -2,6 +2,7 @@ package com.gun.course
 
 import android.Manifest
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.gun.course.service.CountingService
 import com.gun.course.ui.theme.CourseAppTheme
 
 class ComposeActivity : ComponentActivity() {
@@ -58,10 +60,34 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    RequestPermissionScreen(
+                    CountingService(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
+            }
+        }
+    }
+
+
+    @Composable
+    fun CountingService(modifier: Modifier = Modifier) {
+        val context = LocalContext.current
+        var isServiceRunning by remember {
+            mutableStateOf(false)
+        }
+
+        Column(modifier = modifier.fillMaxSize()) {
+            Button(onClick = {
+                val intent = Intent(context, CountingService::class.java)
+                if (isServiceRunning) {
+                    context.stopService(intent)
+                    isServiceRunning = false
+                } else {
+                    context.startService(intent)
+                    isServiceRunning = true
+                }
+            }) {
+                Text(text = if (isServiceRunning) "Stop Counting Service" else "Start Counting Service")
             }
         }
     }
@@ -85,77 +111,5 @@ class ComposeActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-@Composable
-fun SidebarContentLayout(
-    modifier: Modifier = Modifier,
-    items: List<String>,
-    onItemSelected: (String) -> Unit
-) {
-
-    val selectedItem = remember { mutableStateOf<String?>(null) }
-    val context = LocalContext.current
-    val activity = context as? Activity ?: return
-    val windowSize = calculateWindowSizeClass(activity = activity)
-
-    when (windowSize.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> {
-            Column(modifier = modifier.fillMaxSize()) {
-                Sidebar(items = items, onItemSelected = {
-                    selectedItem.value = it
-                    onItemSelected(it)
-                })
-                selectedItem.value?.let {
-                    ContentDetails(
-                        item = it,
-                        modifier = modifier.weight(3f)
-                    )
-                }
-            }
-        }
-
-        WindowWidthSizeClass.Expanded -> {
-            Row {
-                Sidebar(items = items, onItemSelected = {
-                    selectedItem.value = it
-                    onItemSelected(it)
-                })
-                selectedItem.value?.let {
-                    ContentDetails(
-                        item = it,
-                        modifier = modifier.weight(3f)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun Sidebar(
-    modifier: Modifier = Modifier,
-    items: List<String>,
-    onItemSelected: (String) -> Unit
-) {
-    LazyColumn(modifier = modifier) {
-        items(items) { item ->
-            Text(
-                text = item,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .clickable { onItemSelected(item) })
-        }
-    }
-}
-
-@Composable
-fun ContentDetails(modifier: Modifier = Modifier, item: String) {
-    Box(modifier = modifier.padding(16.dp)) {
-        Text(text = "Detail item $item")
     }
 }
