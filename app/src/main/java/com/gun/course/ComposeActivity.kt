@@ -1,10 +1,13 @@
 package com.gun.course
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -32,12 +35,25 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.gun.course.service.CountingService
+import com.gun.course.service.MyBoundService
 import com.gun.course.service.MyForegroundService
 import com.gun.course.ui.theme.CourseAppTheme
 
 class ComposeActivity : ComponentActivity() {
 
     private val REQUEST_NOTIFICATION_PERMISSION = 1
+    private var myBoundService: MyBoundService? = null
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MyBoundService.LocalBinder
+            myBoundService = binder.getService()
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            myBoundService = null
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,10 +62,43 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ForegroundServiceScreen(
+                    MyBoundServiceScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
+            }
+        }
+    }
+
+
+    @Composable
+    fun MyBoundServiceScreen(modifier: Modifier = Modifier) {
+        val context = LocalContext.current
+        var isServiceBound by remember {
+            mutableStateOf(false)
+        }
+
+        Column(modifier = modifier.fillMaxSize()) {
+            Button(onClick = {
+                if (isServiceBound) {
+                    context.unbindService(connection)
+                    isServiceBound = false
+                } else {
+                    val intent = Intent(context, MyBoundService::class.java)
+                    context.bindService(intent, connection, BIND_AUTO_CREATE)
+                    isServiceBound = true
+                }
+
+            }) {
+                Text(text = if (isServiceBound) "Unbind service" else "Bind service")
+            }
+
+            Spacer(modifier = modifier.height(16.dp))
+
+            Button(onClick = {
+                myBoundService?.performOperation()
+            }, enabled = isServiceBound) {
+                Text(text = "Perform operation")
             }
         }
     }
@@ -101,47 +150,5 @@ class ComposeActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun CountingService(modifier: Modifier = Modifier) {
-        val context = LocalContext.current
-        var isServiceRunning by remember {
-            mutableStateOf(false)
-        }
 
-        Column(modifier = modifier.fillMaxSize()) {
-            Button(onClick = {
-                val intent = Intent(context, CountingService::class.java)
-                if (isServiceRunning) {
-                    context.stopService(intent)
-                    isServiceRunning = false
-                } else {
-                    context.startService(intent)
-                    isServiceRunning = true
-                }
-            }) {
-                Text(text = if (isServiceRunning) "Stop Counting Service" else "Start Counting Service")
-            }
-        }
-    }
-
-    @OptIn(ExperimentalPermissionsApi::class)
-    @Composable
-    fun RequestPermissionScreen(modifier: Modifier = Modifier) {
-        val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
-        Column(
-            modifier = modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (cameraPermissionState.status.isGranted) {
-                Text(text = "Permission Granted!, you can access the camera")
-            } else {
-                Text(text = "Permission is required to proceed")
-                Spacer(modifier = modifier.height(16.dp))
-                Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
-                    Text(text = "Request Permission")
-                }
-            }
-        }
-    }
 }

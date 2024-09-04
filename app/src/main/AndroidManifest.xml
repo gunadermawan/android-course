@@ -51,6 +51,7 @@
         <service
             android:name=".service.MyForegroundService"
             android:foregroundServiceType="dataSync" />
+        <service android:name=".service.MyBoundService" />
     </application>
 
 </manifest>
