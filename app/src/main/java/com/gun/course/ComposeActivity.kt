@@ -8,7 +8,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -24,6 +27,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import com.gun.course.ui.theme.CourseAppTheme
 
 class ComposeActivity : ComponentActivity() {
@@ -33,10 +41,56 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SoundPoolExample(
+                    ExoPlayerExample(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun ExoPlayerExample(modifier: Modifier = Modifier) {
+        val context = LocalContext.current
+
+        val exoPlayer = remember {
+            ExoPlayer.Builder(context).build().apply {
+                val mediaItem =
+                    MediaItem.fromUri("https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4")
+                setMediaItem(mediaItem)
+                prepare()
+            }
+        }
+
+        var isPlaying by remember { mutableStateOf(false) }
+
+        DisposableEffect(key1 = Unit) {
+            onDispose {
+                exoPlayer.release()
+            }
+        }
+        Column(
+            modifier = modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AndroidView(factory = { context ->
+                PlayerView(context).apply {
+                    player = exoPlayer
+                }
+            }, modifier = modifier
+                .fillMaxWidth()
+                .height(300.dp))
+            Spacer(modifier = modifier.height(16.dp))
+            Button(onClick = {
+                if (exoPlayer.isPlaying) {
+                    exoPlayer.pause()
+                } else {
+                    exoPlayer.play()
+                }
+                isPlaying = exoPlayer.isPlaying
+            }) {
+                Text(text = if (isPlaying) "Pause" else "Play")
             }
         }
     }
