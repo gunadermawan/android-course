@@ -52,7 +52,10 @@
         <service
             android:name=".service.MyForegroundService"
             android:foregroundServiceType="dataSync" />
-        <service android:name=".service.MyBoundService" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAHynGBL_FVO0CqKM8aMZxk3VIObv73x28" />
     </application>
 
 </manifest>

@@ -45,6 +45,15 @@ import androidx.media3.ui.PlayerView
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import com.gun.course.ui.theme.CourseAppTheme
 
 class ComposeActivity : ComponentActivity() {
@@ -54,7 +63,7 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CameraAndGalleryExample(
+                    MapsScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -183,5 +192,28 @@ class ComposeActivity : ComponentActivity() {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         outputStream.close()
         return Uri.fromFile(context.getFileStreamPath(filename))
+    }
+
+    @Composable
+    fun MapsScreen(modifier: Modifier = Modifier) {
+        val monas = LatLng(-6.1835998, 106.8350423)
+        val cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(monas, 15f)
+        }
+
+        val uiSettings by remember {
+            mutableStateOf(MapUiSettings(zoomControlsEnabled = true))
+        }
+        val propertis by remember {
+            mutableStateOf(MapProperties(mapType = MapType.SATELLITE))
+        }
+        GoogleMap(
+            modifier = modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            properties = propertis,
+            uiSettings = uiSettings
+        ) {
+            Marker(state = rememberMarkerState(position = monas), title = "Monas Marker")
+        }
     }
 }
