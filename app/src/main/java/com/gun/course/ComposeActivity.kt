@@ -1,12 +1,15 @@
 package com.gun.course
 
 import android.Manifest
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,19 +29,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import com.gun.course.receiver.GeofenceBroadcastReceiver
 import com.gun.course.ui.theme.CourseAppTheme
+import com.gun.course.utils.GeofenceHelper
 import kotlinx.coroutines.launch
 
 class ComposeActivity : ComponentActivity() {
@@ -48,34 +49,11 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LocationTracker(
+                    GeofenceScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
-        }
-    }
-
-    @Composable
-    fun MapsScreen(modifier: Modifier = Modifier) {
-        val monas = LatLng(-6.1835998, 106.8350423)
-        val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(monas, 15f)
-        }
-
-        val uiSettings by remember {
-            mutableStateOf(MapUiSettings(zoomControlsEnabled = true))
-        }
-        val propertis by remember {
-            mutableStateOf(MapProperties(mapType = MapType.SATELLITE))
-        }
-        GoogleMap(
-            modifier = modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            properties = propertis,
-            uiSettings = uiSettings
-        ) {
-            Marker(state = rememberMarkerState(position = monas), title = "Monas Marker")
         }
     }
 
@@ -146,6 +124,40 @@ class ComposeActivity : ComponentActivity() {
                         title = "Current Location"
                     )
                 }
+            }
+        }
+    }
+
+    fun geofencePendingIntent(context: Context): PendingIntent {
+        val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
+        return PendingIntent.getBroadcast(
+            context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    @Composable
+    fun GeofenceScreen(modifier: Modifier = Modifier) {
+        val context = LocalContext.current
+        val geofenceHelper = GeofenceHelper(context)
+        val geofenceId = "monas"
+        val latitude = -6.1754
+        val longitude = 106.8272
+        val radius = 500f
+
+        val geofence = geofenceHelper.createGeofence(latitude, longitude, radius, geofenceId)
+        val pendingIntent = geofencePendingIntent(context)
+
+        Column(
+            modifier = modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(text = "GEOFENCING EXAMPLE")
+            Button(onClick = {
+                geofenceHelper.addGeofence(geofence, pendingIntent)
+                Toast.makeText(context, "Geofence Added", Toast.LENGTH_SHORT).show()
+            }) {
+                Text(text = "Add Geofence")
             }
         }
     }
