@@ -90,4 +90,5 @@ dependencies {
     implementation (libs.androidx.glance.material3)
     implementation (libs.accompanist.permissions)
     implementation(libs.maps.compose)
+    implementation (libs.play.services.location)
 }
