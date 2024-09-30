@@ -1,10 +1,10 @@
 [versions]
 accompanistPermissions = "0.35.2-beta"
-agp = "8.4.1"
+agp = "8.4.2"
 coilCompose = "2.7.0"
 converterGson = "2.9.0"
 glanceAppwidget = "1.1.0"
-kotlin = "1.9.0"
+kotlin = "2.0.20"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -22,6 +22,7 @@ composeBom = "2023.08.00"
 playServicesLocation = "21.3.0"
 retrofit = "2.9.0"
 lifecycleViewmodelCompose = "2.8.4"
+roomRuntime = "2.6.1"
 runtimeLivedata = "1.6.8"
 workRuntimeKtx = "2.9.1"
 animationGraphicsAndroid = "1.6.8"
@@ -36,6 +37,9 @@ accompanist-permissions = { module = "com.google.accompanist:accompanist-permiss
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
 androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceAppwidget" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -73,4 +77,5 @@ androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.re
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.devtools.ksp")
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -79,16 +81,22 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.coil.compose)
     // For AppWidgets support
-    implementation (libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.appwidget)
     // For interop APIs with Material 3
-    implementation (libs.androidx.glance.material3)
-    implementation (libs.accompanist.permissions)
+    implementation(libs.androidx.glance.material3)
+    implementation(libs.accompanist.permissions)
     implementation(libs.maps.compose)
-    implementation (libs.play.services.location)
+    implementation(libs.play.services.location)
+    // room
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    // To use Kotlin Symbol Processing (KSP)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
 }
