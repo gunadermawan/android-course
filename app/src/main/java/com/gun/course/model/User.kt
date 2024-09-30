@@ -5,7 +5,11 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "user_table")
-data class User(@PrimaryKey(autoGenerate = true) val userId: Long = 0, val userName: String)
+data class User(
+    @PrimaryKey(autoGenerate = true) val userId: Long = 0,
+    val userName: String,
+    val age: Int? = null
+)
 
 @Entity(
     tableName = "task_table",
