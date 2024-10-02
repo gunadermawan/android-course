@@ -25,4 +25,18 @@ interface UserDao {
 
     @RawQuery
     suspend fun getUserWithAgeGreaterThan(query: SupportSQLiteQuery): List<User>
+
+    @Query("SELECT * FROM  user_table ORDER BY userName ASC")
+    suspend fun getUserSortedByName(): List<User>
+
+    @Query("SELECT * FROM  user_table ORDER BY userName DESC")
+    suspend fun getUserSortedByNameDesc(): List<User>
+
+    @Query("SELECT * FROM  user_table ORDER BY age ASC")
+    suspend fun getUserSortedByAge(): List<User>
+
+    @Query("SELECT * FROM  user_table ORDER BY age DESC")
+    suspend fun getUserSortedByAgeDesc(): List<User>
+
+
 }

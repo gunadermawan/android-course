@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -55,6 +57,38 @@ class ComposeActivity : ComponentActivity() {
     class UserViewModel(private val userDao: UserDao) : ViewModel() {
         var userWithTask by mutableStateOf<UserWithTask?>(null)
         var userAgeAbove by mutableStateOf<List<User>>(emptyList())
+        var sortedUsers by mutableStateOf<List<User>?>(null)
+
+        fun loadUserSortedByAsc() {
+            viewModelScope.launch {
+                try {
+                    sortedUsers = userDao.getUserSortedByName()
+                } catch (e: Exception) {
+                    Log.e("UserViewModel", "Error loading users sorted by age", e)
+                }
+            }
+        }
+
+        fun loadUserSortedByDesc() {
+            viewModelScope.launch {
+                try {
+                    sortedUsers = userDao.getUserSortedByAgeDesc()
+                } catch (e: Exception) {
+                    Log.e("UserViewModel", "Error loading users sorted by age", e)
+                }
+            }
+        }
+
+        fun loadUserSortedByAgeAsc() {
+            viewModelScope.launch {
+                try {
+                    sortedUsers = userDao.getUserSortedByAge()
+                } catch (e: Exception) {
+                    Log.e("UserViewModel", "Error loading users sorted by age", e)
+                }
+            }
+        }
+
 
         fun getUserAgeAbove(age: Int) {
             viewModelScope.launch {
@@ -124,6 +158,8 @@ class ComposeActivity : ComponentActivity() {
         var userAge by remember { mutableStateOf("") }
         var taskName by remember { mutableStateOf("") }
         var minAge by remember { mutableStateOf("") }
+        val sortedUsers = userViewModel.sortedUsers
+
         Column(modifier = modifier.padding(16.dp)) {
             TextField(
                 value = userName,
@@ -142,42 +178,21 @@ class ComposeActivity : ComponentActivity() {
             }) {
                 Text(text = "Add User")
             }
-            TextField(
-                value = taskName,
-                onValueChange = { taskName = it },
-                label = { Text("Task Name") }
-            )
-            Button(onClick = { userViewModel.addTaskForUser(1, taskName) }) {
-                Text(text = "Add Task")
+            Button(onClick = { userViewModel.loadUserSortedByAsc() }) {
+                Text(text = "Sort by Name ASC")
             }
-            TextField(
-                value = minAge,
-                onValueChange = { minAge = it },
-                label = { Text(text = "Min Age") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-            Button(onClick = {
-                val age = minAge.toIntOrNull()
-                if (age != null) {
-                    userViewModel.getUserAgeAbove(age)
-                }
-            }) {
-                Text(text = "Get users above age")
+
+            Button(onClick = { userViewModel.loadUserSortedByAgeAsc() }) {
+                Text(text = "Sort by Age ASC")
             }
-            if (userAgeAbove.isNotEmpty()) {
-                Text(text = "Users with age above $minAge:")
-                userAgeAbove.forEach { user ->
-                    Text(text = "- ${user.userName}")
+            sortedUsers?.let { users ->
+                LazyColumn {
+                    items(users) {
+                        Text(text = "User:${it.userName} Age:${it.age ?: "N/A"}")
+                    }
                 }
             }
-            userWithTask?.let { userWithTask ->
-                Text(text = "User: ${userWithTask.user.userName}")
-                Text(text = "User Age: ${userWithTask.user.age ?: "N/A"}")
-                Text(text = "Task")
-                userWithTask.tasks.forEach { task ->
-                    Text(text = "- ${task.taskName}")
-                }
-            }
+
         }
     }
 }
