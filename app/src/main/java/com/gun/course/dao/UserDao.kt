@@ -4,7 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
 import androidx.room.Transaction
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.gun.course.model.Task
 import com.gun.course.model.User
 import com.gun.course.model.UserWithTask
@@ -20,4 +22,7 @@ interface UserDao {
     @Transaction
     @Query("SELECT * FROM user_table WHERE userId = :userId")
     suspend fun getUserWithTask(userId: Long): UserWithTask
+
+    @RawQuery
+    suspend fun getUserWithAgeGreaterThan(query: SupportSQLiteQuery): List<User>
 }
