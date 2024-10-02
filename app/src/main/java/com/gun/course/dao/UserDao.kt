@@ -1,5 +1,6 @@
 package com.gun.course.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -38,5 +39,6 @@ interface UserDao {
     @Query("SELECT * FROM  user_table ORDER BY age DESC")
     suspend fun getUserSortedByAgeDesc(): List<User>
 
-
+    @Query("SELECT * FROM user_table ORDER BY userName ASC")
+    fun getUsersPaging(): PagingSource<Int, User>
 }

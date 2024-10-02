@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -26,6 +27,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.gun.course.dao.UserDao
 import com.gun.course.db.AppDatabase
@@ -58,6 +64,10 @@ class ComposeActivity : ComponentActivity() {
         var userWithTask by mutableStateOf<UserWithTask?>(null)
         var userAgeAbove by mutableStateOf<List<User>>(emptyList())
         var sortedUsers by mutableStateOf<List<User>?>(null)
+
+        val pagedUsers = Pager(
+            config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+            pagingSourceFactory = { userDao.getUsersPaging() }).flow.cachedIn(viewModelScope)
 
         fun loadUserSortedByAsc() {
             viewModelScope.launch {
@@ -150,6 +160,7 @@ class ComposeActivity : ComponentActivity() {
     @Composable
     fun UserTaskScreen(userDao: UserDao, modifier: Modifier = Modifier) {
         val userViewModel: UserViewModel = viewModel(factory = UserViewModelFactory(userDao))
+        val pagedUsers = userViewModel.pagedUsers.collectAsLazyPagingItems()
 
         val userWithTask = userViewModel.userWithTask
         val userAgeAbove = userViewModel.userAgeAbove
@@ -161,38 +172,37 @@ class ComposeActivity : ComponentActivity() {
         val sortedUsers = userViewModel.sortedUsers
 
         Column(modifier = modifier.padding(16.dp)) {
-            TextField(
-                value = userName,
-                onValueChange = { userName = it },
-                label = { Text(text = "User Name") })
+            LazyColumn {
+                items(pagedUsers.itemCount) { index ->
+                    val user = pagedUsers[index]
+                    user?.let {
+                        Text(text = "User: ${it.userName}, Age: ${it.age}")
+                    }
+                }
+                pagedUsers.apply {
+                    when {
+                        loadState.refresh is LoadState.Loading -> {
+                            item { CircularProgressIndicator() }
+                        }
 
-            TextField(
-                value = userAge,
-                onValueChange = { userAge = it },
-                label = { Text(text = "User Age") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-            Button(onClick = {
-                val age = userAge.toIntOrNull()
-                userViewModel.addUser(userName, age)
-            }) {
-                Text(text = "Add User")
-            }
-            Button(onClick = { userViewModel.loadUserSortedByAsc() }) {
-                Text(text = "Sort by Name ASC")
-            }
+                        loadState.append is LoadState.Loading -> {
+                            item { CircularProgressIndicator() }
+                        }
 
-            Button(onClick = { userViewModel.loadUserSortedByAgeAsc() }) {
-                Text(text = "Sort by Age ASC")
-            }
-            sortedUsers?.let { users ->
-                LazyColumn {
-                    items(users) {
-                        Text(text = "User:${it.userName} Age:${it.age ?: "N/A"}")
+                        loadState.refresh is LoadState.Error -> {
+                            item {
+                                Text(text = "Error loading data: ${loadState.refresh as LoadState.Error}")
+                            }
+                        }
+
+                        loadState.append is LoadState.Error -> {
+                            item {
+                                Text(text = "Error loading data: ${loadState.append as LoadState.Error}")
+                            }
+                        }
                     }
                 }
             }
-
         }
     }
 }
