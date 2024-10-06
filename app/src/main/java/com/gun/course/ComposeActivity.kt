@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -39,6 +40,7 @@ import com.gun.course.model.Task
 import com.gun.course.model.User
 import com.gun.course.model.UserWithTask
 import com.gun.course.ui.theme.CourseAppTheme
+import com.gun.course.utils.CustomAlertDialog
 import kotlinx.coroutines.launch
 
 class ComposeActivity : ComponentActivity() {
@@ -51,8 +53,7 @@ class ComposeActivity : ComponentActivity() {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     userDao = AppDatabase.getInstance(application).userDao()
-                    UserTaskScreen(
-                        userDao,
+                    ShowDialogScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -203,6 +204,51 @@ class ComposeActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    fun ShowDialogScreen(modifier: Modifier = Modifier) {
+        var showDialog by remember {
+            mutableStateOf(false)
+        }
+        Column {
+            Button(onClick = { showDialog = true }) {
+                Text(text = "show dialog")
+            }
+
+            if (showDialog) {
+                CustomAlertDialog()
+            }
+        }
+    }
+
+    @Composable
+    fun CustomAlertDialog(modifier: Modifier = Modifier) {
+        var showDialog by remember {
+            mutableStateOf(true)
+        }
+        if (showDialog) {
+            AlertDialog(onDismissRequest = {
+                showDialog = false
+            }, title = {
+                Text(text = "Peringatan")
+            }, text = {
+                Text(text = "Apakah ingin melanjutkan proses?")
+            }, confirmButton = {
+                Button(onClick = {
+                    showDialog = false
+                }) {
+                    Text(text = "Ya")
+                }
+            }, dismissButton = {
+                Button(onClick = {
+                    showDialog = false
+                }) {
+                    Text(text = "Tidak")
+                }
+            }
+            )
         }
     }
 }
