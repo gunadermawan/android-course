@@ -7,29 +7,41 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.gun.course.network.RetrofitInstance
+import com.gun.course.repository.UserRepoImpl
 import com.gun.course.ui.theme.CourseAppTheme
+import com.gun.course.usecase.GetUserUseCase
 import com.gun.course.viewmodel.UserViewmodel
 
 class ComposeActivity : ComponentActivity() {
+    private val apiService = RetrofitInstance.api
+    private val userRepository = UserRepoImpl(apiService)
+    private val getUserUseCase = GetUserUseCase(userRepository)
+    private val userViewmodel by lazy { UserViewmodel(getUserUseCase) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val userViewmodel: UserViewmodel by viewModels()
 //        enableEdgeToEdge()
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    UserProfileScreen(
+                    UserListScreen(
                         modifier = Modifier.padding(innerPadding),
                         viewmodel = userViewmodel
                     )
@@ -84,12 +96,22 @@ class ComposeActivity : ComponentActivity() {
         }
     }
 
+
     @Composable
-    fun UserProfileScreen(modifier: Modifier = Modifier, viewmodel: UserViewmodel) {
-        val user by viewmodel.user.collectAsState()
-        Column(modifier = modifier.fillMaxSize()) {
-            Text(text = "Name: ${user.name}")
-            Text(text = "Email: ${user.email}")
+    fun UserListScreen(modifier: Modifier = Modifier, viewmodel: UserViewmodel) {
+        val users by viewmodel.users.observeAsState(emptyList())
+        LaunchedEffect(Unit) {
+            viewmodel.fetchUsers()
+        }
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            items(users) {
+                Text(text = it.name)
+            }
         }
     }
 }
