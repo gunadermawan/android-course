@@ -2,6 +2,7 @@ package com.gun.course.network
 
 import com.gun.course.model.Post
 import com.gun.course.model.User
+import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 
 interface ApiService {
@@ -9,6 +10,6 @@ interface ApiService {
     suspend fun getPost(): List<Post>
 
     @GET("users")
-    suspend fun getUser(): List<User>
+    fun getUser(): Single<List<User>>
 
 }

@@ -105,4 +105,7 @@ dependencies {
     implementation(libs.androidx.room.paging)
     // Compose integration for Paging
     implementation(libs.androidx.paging.compose)
+    implementation(libs.adapter.rxjava3)
+    implementation(libs.rxjava)
+    implementation(libs.rxandroid)
 }

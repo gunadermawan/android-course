@@ -25,16 +25,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.gun.course.network.RetrofitInstance
-import com.gun.course.repository.UserRepoImpl
 import com.gun.course.ui.theme.CourseAppTheme
-import com.gun.course.usecase.GetUserUseCase
 import com.gun.course.viewmodel.UserViewmodel
 
 class ComposeActivity : ComponentActivity() {
     private val apiService = RetrofitInstance.api
-    private val userRepository = UserRepoImpl(apiService)
-    private val getUserUseCase = GetUserUseCase(userRepository)
-    private val userViewmodel by lazy { UserViewmodel(getUserUseCase) }
+//    private val userRepository = UserRepoImpl(apiService)
+//    private val getUserUseCase = GetUserUseCase(userRepository)
+    private val userViewmodel by lazy { UserViewmodel(apiService) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        enableEdgeToEdge()
@@ -99,7 +97,8 @@ class ComposeActivity : ComponentActivity() {
 
     @Composable
     fun UserListScreen(modifier: Modifier = Modifier, viewmodel: UserViewmodel) {
-        val users by viewmodel.users.observeAsState(emptyList())
+        val users by viewmodel.users.collectAsState()
+        val error by viewmodel.error.collectAsState()
         LaunchedEffect(Unit) {
             viewmodel.fetchUsers()
         }
