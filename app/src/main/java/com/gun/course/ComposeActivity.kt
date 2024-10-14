@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +31,8 @@ import com.gun.course.viewmodel.UserViewmodel
 
 class ComposeActivity : ComponentActivity() {
     private val apiService = RetrofitInstance.api
-//    private val userRepository = UserRepoImpl(apiService)
+
+    //    private val userRepository = UserRepoImpl(apiService)
 //    private val getUserUseCase = GetUserUseCase(userRepository)
     private val userViewmodel by lazy { UserViewmodel(apiService) }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,14 +104,21 @@ class ComposeActivity : ComponentActivity() {
         LaunchedEffect(Unit) {
             viewmodel.fetchUsers()
         }
-        LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            items(users) {
-                Text(text = it.name)
+        if (error != null) {
+            Text(text = "error: $error")
+        } else {
+            LazyColumn(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                items(users) {
+                    Column(modifier = modifier.padding(16.dp)) {
+                        Text(text = it.name, style = MaterialTheme.typography.titleMedium)
+                        Text(text = it.email, style = MaterialTheme.typography.titleMedium)
+                    }
+                }
             }
         }
     }

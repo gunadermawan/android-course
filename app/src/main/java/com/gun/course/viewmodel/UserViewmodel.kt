@@ -14,6 +14,8 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class UserViewmodel(private val apiService: ApiService) : ViewModel() {
@@ -26,21 +28,16 @@ class UserViewmodel(private val apiService: ApiService) : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
 
     fun fetchUsers() {
-        val disposable = apiService.getUser()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { result ->
-                    viewModelScope.launch {
-                        _users.value = result
-                    }
-
-                }, { throwable ->
-                    viewModelScope.launch {
-                        _error.value = throwable.message
-                    }
-                })
-        compositeDisposable.addAll(disposable)
+        viewModelScope.launch {
+            flow {
+                emit(apiService.getUser())
+            }.catch { e ->
+                _error.value = e.message
+            }
+                .collect {
+                    _users.value = it
+                }
+        }
     }
 
     override fun onCleared() {
