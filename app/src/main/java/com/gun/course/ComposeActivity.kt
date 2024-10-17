@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,15 +27,18 @@ import androidx.compose.ui.unit.dp
 import com.gun.course.network.RetrofitInstance
 import com.gun.course.ui.theme.CourseAppTheme
 import com.gun.course.viewmodel.UserViewmodel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ComposeActivity : ComponentActivity() {
     private val apiService = RetrofitInstance.api
 
     //    private val userRepository = UserRepoImpl(apiService)
 //    private val getUserUseCase = GetUserUseCase(userRepository)
-    private val userViewmodel by lazy { UserViewmodel(apiService) }
+//    private val userViewmodel by lazy { UserViewmodel(apiService) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val userViewmodel: UserViewmodel by viewModels()
 //        enableEdgeToEdge()
         setContent {
             CourseAppTheme {
