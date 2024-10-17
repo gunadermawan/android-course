@@ -3,7 +3,6 @@ package com.gun.course
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,9 +26,9 @@ import androidx.compose.ui.unit.dp
 import com.gun.course.network.RetrofitInstance
 import com.gun.course.ui.theme.CourseAppTheme
 import com.gun.course.viewmodel.UserViewmodel
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
-@AndroidEntryPoint
+
 class ComposeActivity : ComponentActivity() {
     private val apiService = RetrofitInstance.api
 
@@ -38,7 +37,7 @@ class ComposeActivity : ComponentActivity() {
 //    private val userViewmodel by lazy { UserViewmodel(apiService) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val userViewmodel: UserViewmodel by viewModels()
+        val userViewmodel: UserViewmodel = getViewModel()
 //        enableEdgeToEdge()
         setContent {
             CourseAppTheme {

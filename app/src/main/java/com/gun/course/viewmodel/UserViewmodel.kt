@@ -1,27 +1,18 @@
 package com.gun.course.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gun.course.model.User
 import com.gun.course.network.ApiService
-import com.gun.course.repository.UserRepository
-import com.gun.course.usecase.GetUserUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class UserViewmodel @Inject constructor(private val apiService: ApiService) : ViewModel() {
+class UserViewmodel(private val apiService: ApiService) : ViewModel() {
     private val _users = MutableStateFlow<List<User>>(emptyList())
     val users: StateFlow<List<User>> = _users
 
@@ -36,6 +27,7 @@ class UserViewmodel @Inject constructor(private val apiService: ApiService) : Vi
                 emit(apiService.getUser())
             }.catch { e ->
                 _error.value = e.message
+                Log.e("TAG", "fetchUsers: ${e.message}", )
             }
                 .collect {
                     _users.value = it

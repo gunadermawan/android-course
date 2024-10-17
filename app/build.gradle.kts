@@ -112,6 +112,12 @@ dependencies {
     implementation(libs.rxandroid)
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    // Koin core
+    implementation(libs.koin.core)
+    // Koin Android
+    implementation(libs.koin.android)
+    // Koin for Jetpack Compose
+    implementation(libs.koin.androidx.compose)
 }
 kapt {
     correctErrorTypes = true
