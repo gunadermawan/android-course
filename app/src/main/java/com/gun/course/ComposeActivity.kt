@@ -45,8 +45,8 @@ class ComposeActivity : ComponentActivity() {
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    EncryptScreen(
-                        modifier = Modifier.padding(innerPadding),
+                    UserListScreen(
+                        modifier = Modifier.padding(innerPadding), userViewmodel
                     )
                 }
             }
