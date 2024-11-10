@@ -29,7 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.gun.course.ui.AuthScreen
 import com.gun.course.ui.theme.CourseAppTheme
+import com.gun.course.viewmodel.AuthViewModel
 import com.gun.course.viewmodel.UserViewmodel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import java.security.Key
@@ -40,13 +42,13 @@ import javax.crypto.spec.SecretKeySpec
 class ComposeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val userViewmodel: UserViewmodel = getViewModel()
+        val authViewModel: AuthViewModel = getViewModel()
 //        enableEdgeToEdge()
         setContent {
             CourseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    UserListScreen(
-                        modifier = Modifier.padding(innerPadding), userViewmodel
+                    AuthScreen(
+                        modifier = Modifier.padding(innerPadding), authViewModel
                     )
                 }
             }

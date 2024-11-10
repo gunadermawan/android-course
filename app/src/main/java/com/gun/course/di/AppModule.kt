@@ -1,7 +1,9 @@
 package com.gun.course.di
 
+import com.google.firebase.auth.FirebaseAuth
 import com.gun.course.R
 import com.gun.course.network.ApiService
+import com.gun.course.viewmodel.AuthViewModel
 import com.gun.course.viewmodel.UserViewmodel
 import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
@@ -53,4 +55,8 @@ val appModule = module {
     }
 
     viewModel { UserViewmodel(get()) }
+
+    single { FirebaseAuth.getInstance() }
+
+    viewModel { AuthViewModel(get()) }
 }

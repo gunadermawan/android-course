@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "20716139580",
+    "project_id": "enigma-camp-b3ec2",
+    "storage_bucket": "enigma-camp-b3ec2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20716139580:android:cecb263f2f57ebcbc8ff39",
+        "android_client_info": {
+          "package_name": "com.gun.course"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMrficOj38lEqSRaIung63iNjTjpdU6b8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
